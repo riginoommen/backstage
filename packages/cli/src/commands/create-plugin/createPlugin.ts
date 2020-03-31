@@ -109,13 +109,17 @@ const sortObjectByKeys = (obj: { [name in string]: string }) => {
 const capitalize = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
-const addExportStatement = (file: string, exportStatement: string) => {
+const addExportStatement = (
+  file: string,
+  importStatement: string,
+  exportStatement: string,
+) => {
   const newContents = fs
     .readFileSync(file, 'utf8')
     .split('\n')
     .filter(Boolean) // get rid of empty lines
-    .concat([exportStatement])
-    .sort()
+    .concat([importStatement, exportStatement])
+    .sort(line => (line.startsWith('export') ? 0 : 1))
     .concat(['']) // newline at end of file
     .join('\n');
 
@@ -176,7 +180,8 @@ export const addPluginToApp = (rootDir: string, pluginName: string) => {
     .split('-')
     .map(name => capitalize(name))
     .join('');
-  const pluginExport = `export { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginImport = `import { default as ${pluginNameCapitalized} } from '${pluginPackage}';`;
+  const pluginExport = `export { ${pluginNameCapitalized} };`;
   const pluginsFile = path.join(
     rootDir,
     'packages',
@@ -191,7 +196,7 @@ export const addPluginToApp = (rootDir: string, pluginName: string) => {
   );
 
   try {
-    addExportStatement(pluginsFile, pluginExport);
+    addExportStatement(pluginsFile, pluginImport, pluginExport);
   } catch (e) {
     process.stdout.write(MARKER_FAILURE);
     throw new Error(
