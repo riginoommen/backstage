@@ -15,16 +15,16 @@
  */
 
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import typescript from 'rollup-plugin-typescript2'; // @rollup/plugin-typescript
+import typescript from 'rollup-plugin-typescript2';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';
-import image from 'rollup-plugin-image-files';
+import imageFiles from 'rollup-plugin-image-files';
 
 export default {
   input: 'src/index.ts',
   output: {
-    file: 'build/index.cjs.js',
+    file: 'dist/index.cjs.js',
     format: 'cjs',
   },
   plugins: [
@@ -35,7 +35,7 @@ export default {
       exclude: ['**/*.stories.js'],
     }),
     postcss(),
-    image(),
+    imageFiles(),
     typescript(),
   ],
 };
